@@ -33,7 +33,7 @@ def read_distances_with_names(filename):
     with open(filename, 'r') as f:
         lines = [line.strip() for line in f if line.strip()]
     city_names = lines[0].split(',')
-    dists = [[int(x) for x in line.split(',')] for line in lines[1:]]
+    dists = [[float(x) for x in line.split(',')] for line in lines[1:]]
     return city_names, dists
 
 def read_hours_matrix(filename):
