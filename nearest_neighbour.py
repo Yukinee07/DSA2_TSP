@@ -1,41 +1,33 @@
-import itertools
 import sys
 import time
 
-def held_karp(dists):
+def nearest_neighbor_tsp(dists, return_to_start=False):
+    """
+    Approximate TSP solution using the Nearest Neighbor heuristic.
+    If return_to_start is False, the route will not return to the starting city.
+    dists: 2D list or matrix of distances between cities.
+    Returns (total_cost, path_indices).
+    """
     n = len(dists)
-    C = {}
+    unvisited = set(range(1, n))
+    path = [0]  # start at city 0
+    total_cost = 0
 
-    for k in range(1, n):
-        C[(1 << k, k)] = (dists[0][k], 0)
+    current = 0
+    while unvisited:
+        # Find nearest unvisited city
+        next_city = min(unvisited, key=lambda city: dists[current][city])
+        total_cost += dists[current][next_city]
+        path.append(next_city)
+        unvisited.remove(next_city)
+        current = next_city
 
-    for subset_size in range(2, n):
-        for subset in itertools.combinations(range(1, n), subset_size):
-            bits = 0
-            for bit in subset:
-                bits |= 1 << bit
+    if return_to_start:
+        # Return to start city to complete the cycle
+        total_cost += dists[current][0]
+        path.append(0)
 
-            for k in subset:
-                prev = bits & ~(1 << k)
-                res = []
-                for m in subset:
-                    if m == k:
-                        continue
-                    res.append((C[(prev, m)][0] + dists[m][k], m))
-                C[(bits, k)] = min(res)
-
-    bits = (2**n - 1) - 1
-    res = [(C[(bits, k)][0] + dists[k][0], k) for k in range(1, n)]
-    opt, parent = min(res)
-
-    path = []
-    for _ in range(n - 1):
-        path.append(parent)
-        bits, parent = bits & ~(1 << parent), C[(bits, parent)][1]
-    path.append(0)
-    path.reverse()
-
-    return opt, path
+    return total_cost, path
 
 def read_distances_with_names(filename):
     with open(filename, 'r') as f:
@@ -52,7 +44,7 @@ def read_hours_matrix(filename):
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
-        print("Usage: python held_karp.py distance_file.csv hours_file.csv")
+        print("Usage: python nearest_neighbour.py distance_file.csv hours_file.csv")
         sys.exit(1)
 
     distance_filename = sys.argv[1]
@@ -68,14 +60,15 @@ if __name__ == '__main__':
     print()
 
     start_time = time.time()
-    cost, path_indices = held_karp(dists)
+    # Set return_to_start=False to avoid returning to the start city
+    cost, path_indices = nearest_neighbor_tsp(dists, return_to_start=False)
     end_time = time.time()
 
     # Convert path to city names
     path_names = [city_names[i] for i in path_indices]
 
-    # Print distance result
-    print("Optimal TSP Path based on distance:")
+    # Print TSP path and cost
+    print("Nearest Neighbor TSP Path based on distance (no return to start):")
     print((cost, path_names))
     print(f"\nComputation Time: {end_time - start_time:.4f} seconds")
 
