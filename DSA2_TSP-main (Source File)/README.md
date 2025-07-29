@@ -1,0 +1,17 @@
+How to run:
+
+For Malaysian Cities:
+
+Held-Karp (Exact Solution):
+python held_karp.py malaysia_city_distance.csv hours_malaysia_city_distance.csv  
+
+Nearest Neighbor (Approximate Solution):
+python nearest_neighbour.py malaysia_city_distance.csv hours_malaysia_city_distance.csv 
+
+For IIUM Kulliyyahs:
+
+Held-Karp (Exact Solution):
+python held_karp.py iium_kulliyyah_distance.csv iium_kulliyyah_time_distance.csv  
+
+Nearest Neighbor (Approximate Solution):
+python nearest_neighbour.py iium_kulliyyah_distance.csv iium_kulliyyah_time_distance.csv
